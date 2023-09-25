@@ -17,4 +17,5 @@ spring:
         formal_sql: true
   sql:
     init:
-      mode: never
+      mode: always
+      continue-on-error: false
