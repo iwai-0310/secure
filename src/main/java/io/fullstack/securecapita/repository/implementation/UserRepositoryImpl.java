@@ -6,6 +6,7 @@ import io.fullstack.securecapita.exception.ApiException;
 import io.fullstack.securecapita.repository.RoleRepository;
 import io.fullstack.securecapita.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -58,7 +59,8 @@ public class UserRepositoryImpl implements UserRepository<User> {
             return user;
             //If any errors,throw exception
         }  catch (Exception exception){
-            throw new ApiException("An error occured.Please try again!");
+            log.error(exception.getMessage());
+            throw new ApiException("An error occurred.Please try again!");
         }
     }
 
@@ -91,8 +93,8 @@ public class UserRepositoryImpl implements UserRepository<User> {
         return new MapSqlParameterSource()
                 .addValue("firstName",user.getFirstName())
                 .addValue("lastName",user.getLastName())
-                .addValue("Email",user.getEmail())
-                .addValue("Password",encoder.encode(user.getPassword()));
+                .addValue("email",user.getEmail())
+                .addValue("password",encoder.encode(user.getPassword()));
     }
     private String getVerificationUrl(String key,String type){
         return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/verify/"+ type + "/"+key).toUriString();
