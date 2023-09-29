@@ -1,23 +1,7 @@
-
 spring:
-  auto-configure:
-    exclude: import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-  dataSource:
-    url: jdbc:mysql://127.0.0.1:3306/securecapita
-    password: genev@123
-    username: root
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
-    generate-ddl: true
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        globally_quoted_indentifiers: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        formal_sql: true
-  sql:
-    init:
-      mode: never
-      continue-on-error: false
+  profiles:
+    active: @spring.profiles.active@
+
+application:
+  title: SecureCapita
+  version: 1.8

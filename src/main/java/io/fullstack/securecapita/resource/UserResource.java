@@ -6,12 +6,10 @@ import io.fullstack.securecapita.dto.UserDTO;
 import io.fullstack.securecapita.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -40,6 +38,31 @@ public class UserResource {
     private URI getUri(){
             return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/get/<userId>").toUriString());
 
+    }
+    @GetMapping("/Find/{id}")
+    public ResponseEntity<HttpResponse> getUser(@PathVariable Long id){
+        UserDTO userDTO=userService.getUser(id);
+        return ResponseEntity.created(null).body(
+        HttpResponse.builder()
+                .timeStamp(now().toString())
+                .data(Map.of("user",userDTO))
+                .message("User presented")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<HttpResponse> updateUser(@RequestBody @Valid User user){
+        UserDTO userDTO=userService.updateUser(user);
+        return ResponseEntity.created(null).body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("user",userDTO))
+                        .message("User updated")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 }

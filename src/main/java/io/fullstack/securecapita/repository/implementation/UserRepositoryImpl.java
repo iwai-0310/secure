@@ -6,9 +6,10 @@ import io.fullstack.securecapita.exception.ApiException;
 import io.fullstack.securecapita.repository.RoleRepository;
 import io.fullstack.securecapita.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
+
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -63,10 +64,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
             throw new ApiException("An error occurred.Please try again!");
         }
     }
-
-
-
-
     @Override
     public Collection<User> list(int page, int pageSize) {
         return null;
@@ -74,14 +71,73 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public User get(Long id) {
-        return null;
+        //create the user
+        User user=new User();
+        try{
+            //below line maps the field userID <- key and id <- value
+            Map<String,Object> result=jdbc.queryForMap(SELECT_USER_BY_USERID_QUERY,Map.of("userId",id));
+            //check if the result is null or empty
+            if(result!=null && !result.isEmpty()){
+                //set user details if present.
+                user.setId(id);
+                user.setFirstName((String) result.get("first_name"));
+                user.setLastName((String) result.get("last_name"));
+                user.setEmail((String) result.get("email"));
+                //return the use
+                return user;
+            }else{
+                log.warn("User with ID"+id+"not found");
+            }
+        }catch(DataAccessException exec) {
+            log.error(exec.getMessage());
+            throw new ApiException("An error Occurred .Pls try again");
+        }
+        return user;
     }
+
+//    @Override
+//    public User update(User user) {
+//        //check the email is present
+//        if(getEmailCount(user.getEmail().trim().toLowerCase())>0) {
+//            //save new user
+//            try{
+//                SqlParameterSource parameters= getSqlParameterSource(user);
+//                jdbc.update(UPDATE_USER_QUERY,parameters);
+//                user.setId(user.getId());
+//                user.setEnabled(false);
+//                user.setNotLocked(true);
+//                //return the newly created user
+//                return user;
+//                //If any errors,throw exception
+//            }  catch (Exception exception){
+//                log.error(exception.getMessage());
+//                throw new ApiException("An error occurred.Please try again!");
+//            }
+//        }
+//        return user;
+//    }
 
     @Override
-    public User update(User data) {
-        return null;
+    public User update(User user) {
+        //check the email is present
+        if(getEmailCount(user.getEmail().trim().toLowerCase())>0) {
+            //save new user
+            try{
+                SqlParameterSource parameters= getSqlParameterSourceForUpdate(user);
+                jdbc.update(UPDATE_USER_QUERY,parameters);
+                user.setId(user.getId());
+                user.setEnabled(false);
+                user.setNotLocked(true);
+                //return the newly created user
+                return user;
+                //If any errors,throw exception
+            }  catch (Exception exception){
+                log.error(exception.getMessage());
+                throw new ApiException("An error occurred.Please try again!");
+            }
+        }
+        return user;
     }
-
     @Override
     public Boolean delete(Long id) {
         return null;
@@ -95,6 +151,16 @@ public class UserRepositoryImpl implements UserRepository<User> {
                 .addValue("lastName",user.getLastName())
                 .addValue("email",user.getEmail())
                 .addValue("password",encoder.encode(user.getPassword()));
+
+    }
+    private SqlParameterSource getSqlParameterSourceForUpdate(User user) {
+        return new MapSqlParameterSource()
+                .addValue("firstName",user.getFirstName())
+                .addValue("lastName",user.getLastName())
+                .addValue("email",user.getEmail())
+                .addValue("userId",user.getId())
+                .addValue("password",encoder.encode(user.getPassword()));
+
     }
     private String getVerificationUrl(String key,String type){
         return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/verify/"+ type + "/"+key).toUriString();

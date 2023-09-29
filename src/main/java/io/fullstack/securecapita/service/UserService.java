@@ -5,4 +5,7 @@ import io.fullstack.securecapita.dto.UserDTO;
 
 public interface UserService {
     UserDTO createUser(User user);
+    UserDTO getUser(Long id);
+
+    UserDTO updateUser(User user);
 }
