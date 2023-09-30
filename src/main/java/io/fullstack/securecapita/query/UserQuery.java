@@ -10,5 +10,5 @@ public class UserQuery {
     public static final String SELECT_USER_BY_USERID_QUERY="SELECT * FROM Users where id= :userId";
     public static final String UPDATE_USER_QUERY="UPDATE Users SET (first_name=:firstName,last_name=:lastName,email=:email,password=:password) WHERE (id =:userId) ";
 
-
+    public static final String DELETE_USER_BY_USERID_QUERY="DELETE FROM Users WHERE (id=:userId)";
 }

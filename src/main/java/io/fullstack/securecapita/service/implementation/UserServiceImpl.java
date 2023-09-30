@@ -27,4 +27,9 @@ public class UserServiceImpl implements UserService {
         return UserDTOMapper.fromUser(userRepository.update(user));
     }
 
+    @Override
+    public Boolean deleteUser(Long id) {
+        return userRepository.delete(id);
+    }
+
 }

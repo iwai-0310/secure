@@ -95,28 +95,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
         return user;
     }
 
-//    @Override
-//    public User update(User user) {
-//        //check the email is present
-//        if(getEmailCount(user.getEmail().trim().toLowerCase())>0) {
-//            //save new user
-//            try{
-//                SqlParameterSource parameters= getSqlParameterSource(user);
-//                jdbc.update(UPDATE_USER_QUERY,parameters);
-//                user.setId(user.getId());
-//                user.setEnabled(false);
-//                user.setNotLocked(true);
-//                //return the newly created user
-//                return user;
-//                //If any errors,throw exception
-//            }  catch (Exception exception){
-//                log.error(exception.getMessage());
-//                throw new ApiException("An error occurred.Please try again!");
-//            }
-//        }
-//        return user;
-//    }
-
     @Override
     public User update(User user) {
         //check the email is present
@@ -140,7 +118,17 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
     @Override
     public Boolean delete(Long id) {
-        return null;
+        Boolean isDeleted=false;
+            try{
+                int rowsAffected=jdbc.update(DELETE_USER_BY_USERID_QUERY,Map.of("userId",id));
+                if(rowsAffected>0){isDeleted=true;}
+            }
+            catch (Exception exception){
+                log.error(exception.getMessage());
+                throw new ApiException("Delete user: user id not found");
+            }
+
+        return isDeleted;
     }
     private Integer  getEmailCount(String email) {
         return jdbc.queryForObject(COUNT_USER_EMAIL_QUERY, Map.of("email",email),Integer.class);

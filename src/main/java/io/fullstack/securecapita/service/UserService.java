@@ -8,4 +8,5 @@ public interface UserService {
     UserDTO getUser(Long id);
 
     UserDTO updateUser(User user);
+    Boolean deleteUser(Long id);
 }

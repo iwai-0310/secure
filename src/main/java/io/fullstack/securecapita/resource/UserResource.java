@@ -64,5 +64,17 @@ public class UserResource {
                         .statusCode(HttpStatus.OK.value())
                         .build());
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable Long id){
+        Boolean isDeleted=userService.deleteUser(id);
+        return ResponseEntity.created(null).body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("user-deleted",isDeleted))
+                        .message("User deleted")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
 
 }
