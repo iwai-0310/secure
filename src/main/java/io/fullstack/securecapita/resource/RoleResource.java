@@ -20,16 +20,27 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 @RequestMapping(path="/role")
 public class RoleResource {
-    private RoleService roleService;
-    @GetMapping("/Find/{id}")
+    private final RoleService roleService;
+    @GetMapping("/find/{id}")
     public ResponseEntity<HttpResponse> getRole(@PathVariable Long id){
-
         RoleDTO roleDTO=roleService.getRole(id);
         return ResponseEntity.created(null).body(
                 HttpResponse.builder()
                         .timeStamp(now().toString())
                         .data(Map.of("role",roleDTO))
                         .message("Role present")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
+    @GetMapping("/findRole/{id}")
+    public ResponseEntity<HttpResponse> getUserRole(@PathVariable Long id){
+        RoleDTO roleDTO=roleService.getUserRole(id);
+        return ResponseEntity.created(null).body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("role",roleDTO))
+                        .message("User Role present")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .build());

@@ -10,4 +10,6 @@ public interface RoleService {
     RoleDTO updateRole(Role role);
 
     RoleDTO deleteRole(Long id);
+
+    RoleDTO getUserRole(Long id);
 }

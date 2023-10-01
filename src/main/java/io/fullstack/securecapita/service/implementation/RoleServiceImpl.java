@@ -18,7 +18,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO getRole(Long id) {
+    public RoleDTO getRole(Long id)
+    {
         return RoleDTOMapper.fromRole(roleRepository.get(id));
     }
 
@@ -30,5 +31,10 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDTO deleteRole(Long id) {
         return null;
+    }
+
+    @Override
+    public RoleDTO getUserRole(Long id) {
+        return RoleDTOMapper.fromRole(roleRepository.getRoleByUserId(id));
     }
 }

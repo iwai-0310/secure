@@ -51,15 +51,14 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     }
 
     @Override
-    public Role update(Role data) {
+    public Role update(Role role) {
+
         return null;
     }
-
     @Override
     public Boolean delete(Long id) {
         return null;
     }
-
     @Override
     public void addRoleToUser(Long userId, String roleName) {
         log.info("Adding role {} to user id: {}",roleName,userId);
@@ -74,8 +73,26 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     }
 
     @Override
-    public Role getRoleByUserId(Long userId) {
-        return null;
+    public Role getRoleByUserId(Long id) {
+        Role role=new Role();
+        long roleid=0;
+        try{
+
+            Map<String,Object> result=jdbc.queryForMap(SELECT_ROLEID_BY_USERID_QUERY,Map.of("userId",id));
+            if(!result.isEmpty() && result!=null){
+                roleid= (long) result.get("role_id");
+               // Map<String,Object> role_details=jdbc.queryForMap(SELECT_ROLE_BY_USERID_QUERY,Map.of("userId",userid));
+                role= jdbc.queryForObject(SELECT_ROLE_BY_ROLEID_QUERY,Map.of("roleId",roleid),new RoleRowMapper());
+                return role;
+            }
+        }
+        catch(EmptyResultDataAccessException exception){
+            throw new ApiException("No role found by id:"+id);
+        }
+        catch(Exception exc){
+            log.error(exc.getMessage());
+        }
+        return role;
     }
 
     @Override
