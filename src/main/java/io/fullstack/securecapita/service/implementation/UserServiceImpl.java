@@ -6,10 +6,15 @@ import io.fullstack.securecapita.dtomapper.UserDTOMapper;
 import io.fullstack.securecapita.repository.UserRepository;
 import io.fullstack.securecapita.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
+//@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository<User> userRepository;
     @Override
@@ -23,6 +28,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Collection<User> list(Long limit) {
+        log.info("Fetching users INFO");
+        return userRepository.listUsers(limit);
+    }
+
+
+    @Override
     public UserDTO updateUser(User user) {
         return UserDTOMapper.fromUser(userRepository.update(user));
     }
@@ -31,5 +43,7 @@ public class UserServiceImpl implements UserService {
     public Boolean deleteUser(Long id) {
         return userRepository.delete(id);
     }
+
+
 
 }

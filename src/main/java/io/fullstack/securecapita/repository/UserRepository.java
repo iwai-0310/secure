@@ -9,10 +9,10 @@ import java.util.Collection;
 public interface UserRepository<T extends User> {
     //Basic CRUD operations
     T create(T data);
-    Collection<T> list (int page, int pageSize);
     T get(Long id);
     T update(User user);
     Boolean delete(Long id);
+    Collection<T> listUsers(Long limit);
 
     //Complex Operations
 }

@@ -4,12 +4,14 @@ import io.fullstack.securecapita.domain.Role;
 import io.fullstack.securecapita.domain.User;
 import io.fullstack.securecapita.exception.ApiException;
 import io.fullstack.securecapita.repository.RoleRepository;
+
 import io.fullstack.securecapita.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,9 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.math.BigInteger;
+import java.util.*;
 
 import static io.fullstack.securecapita.enumeration.RoleType.ROLE_USER;
 import static io.fullstack.securecapita.enumeration.VerificationType.ACCOUNT;
@@ -45,9 +46,9 @@ public class UserRepositoryImpl implements UserRepository<User> {
             KeyHolder holder=new GeneratedKeyHolder();
             SqlParameterSource parameters= getSqlParameterSource(user);
             jdbc.update(INSERT_USER_QUERY,parameters,holder);
-            user.setId(requireNonNull(holder.getKey()).longValue());
+            user.setId(BigInteger.valueOf(requireNonNull(holder.getKey()).longValue()));
             //Add role to the user
-            roleRepository.addRoleToUser(user.getId(),ROLE_USER.name());
+//            roleRepository.addRoleToUser(user.getId(),ROLE_USER.name());
             //send verification URL
             String verificationUrl=getVerificationUrl(UUID.randomUUID().toString(),ACCOUNT.getType());
             //save URL in verification table
@@ -64,10 +65,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
             throw new ApiException("An error occurred.Please try again!");
         }
     }
-    @Override
-    public Collection<User> list(int page, int pageSize) {
-        return null;
-    }
+
 
     @Override
     public User get(Long id) {
@@ -79,7 +77,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
             //check if the result is null or empty
             if(result!=null && !result.isEmpty()){
                 //set user details if present.
-                user.setId(id);
+                user.setId(BigInteger.valueOf(id));
                 user.setFirstName((String) result.get("first_name"));
                 user.setLastName((String) result.get("last_name"));
                 user.setEmail((String) result.get("email"));
@@ -130,6 +128,28 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
         return isDeleted;
     }
+
+    @Override
+    public Collection<User> listUsers(Long limit) {
+       List<User> users=new ArrayList<>();
+        try{
+            List<Map<String,Object>> ans=jdbc.queryForList(SELECT_ALL_USERS_QUERY,Map.of("Limit",limit));
+            for(Map<String,Object> row:ans){
+                User user=new User();
+                user.setId(BigInteger.valueOf(((Number) row.get("id")).longValue()));
+                user.setFirstName((String) row.get("first_name"));
+                user.setLastName((String) row.get("last_name"));
+                user.setEmail((String) row.get("email"));
+                users.add(user);
+            }
+        }catch(Exception exc){
+            log.error(exc.getMessage());
+            throw new ApiException("Something went wrong while returning the Users");
+        }
+        return users;
+    }
+
+
     private Integer  getEmailCount(String email) {
         return jdbc.queryForObject(COUNT_USER_EMAIL_QUERY, Map.of("email",email),Integer.class);
     }

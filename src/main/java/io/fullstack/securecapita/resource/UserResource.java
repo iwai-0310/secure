@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.LocalDateTime.now;
 
@@ -39,6 +40,7 @@ public class UserResource {
             return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/get/<userId>").toUriString());
 
     }
+
     @GetMapping("/Find/{id}")
     public ResponseEntity<HttpResponse> getUser(@PathVariable Long id){
         UserDTO userDTO=userService.getUser(id);
@@ -72,6 +74,19 @@ public class UserResource {
                         .timeStamp(now().toString())
                         .data(Map.of("user-deleted",isDeleted))
                         .message("User deleted")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
+
+    @GetMapping("/list/{limit}")
+    public ResponseEntity<HttpResponse> getUsers(@PathVariable Long limit) throws InterruptedException {
+
+        return ResponseEntity.created(null).body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("users",userService.list(limit)))
+                        .message("Users ")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .build());

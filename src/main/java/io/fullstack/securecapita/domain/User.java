@@ -1,6 +1,7 @@
 package io.fullstack.securecapita.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -8,16 +9,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+//@Entity
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class User {
-    private Long
-            id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+    private BigInteger id;
     @NotEmpty(message="First name cannot be empty")
     private String firstName;
     @NotEmpty(message="Last name cannot be empty")
