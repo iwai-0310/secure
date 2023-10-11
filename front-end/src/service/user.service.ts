@@ -38,11 +38,13 @@ export class UserService{
     );
     //delete$ observable to subscribe to delete a user
     delete$=(userid:number)=> <Observable<CustomResponse>>
-    this.http.delete<CustomResponse>('{this.apiUrl}/user/delete/${userid}')
+    this.http.delete<CustomResponse>(`${this.apiUrl}/user/delete/${userid}`)
     .pipe(
         tap(console.log),
         catchError(this.handleError)
     )
+
+    
     //TBD create functionality to add update and get a single user
     //create a method to handle the error
     private handleError(error:HttpErrorResponse):Observable<never>{

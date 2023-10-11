@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface UserService {
     UserDTO createUser(User user);
     UserDTO getUser(Long id);
-    Collection<User> list(Long limit);
+    Collection<User> list();
     UserDTO updateUser(User user);
     Boolean deleteUser(Long id);
 

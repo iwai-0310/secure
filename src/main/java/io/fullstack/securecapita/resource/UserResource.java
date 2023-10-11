@@ -79,13 +79,13 @@ public class UserResource {
                         .build());
     }
 
-    @GetMapping("/list/{limit}")
-    public ResponseEntity<HttpResponse> getUsers(@PathVariable Long limit) throws InterruptedException {
+    @GetMapping("/list")
+    public ResponseEntity<HttpResponse> getUsers() throws InterruptedException {
 
         return ResponseEntity.created(null).body(
                 HttpResponse.builder()
                         .timeStamp(now().toString())
-                        .data(Map.of("users",userService.list(limit)))
+                        .data(Map.of("users",userService.list()))
                         .message("Users ")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())

@@ -42,7 +42,7 @@
                 <td>{{user.lastName}}</td>
                 <td>{{user.email}}</td>
                 <td>
-                  <a class="delete" style="cursor:pointer;"> <i class="material-icons" title="Delete">&#xE872;</i></a>
+                  <a  (click)="deleteUser(user)" class="delete" data-toggle="modal" style="cursor:pointer;"> <i class="material-icons" title="Delete">&#xE872;</i></a>
                 </td>
                 <td>
                   <a class="save" style="cursor:pointer;"><i class="material-icons">send</i></a>

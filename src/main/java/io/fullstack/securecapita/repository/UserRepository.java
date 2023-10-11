@@ -12,7 +12,7 @@ public interface UserRepository<T extends User> {
     T get(Long id);
     T update(User user);
     Boolean delete(Long id);
-    Collection<T> listUsers(Long limit);
+    Collection<T> listUsers();
 
     //Complex Operations
 }

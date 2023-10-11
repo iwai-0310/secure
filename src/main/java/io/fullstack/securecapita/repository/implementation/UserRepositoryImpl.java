@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -68,23 +69,27 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
 
     @Override
-    public User get(Long id) {
+    public User get(Long theid) {
         //create the user
         User user=new User();
         try{
             //below line maps the field userID <- key and id <- value
-            Map<String,Object> result=jdbc.queryForMap(SELECT_USER_BY_USERID_QUERY,Map.of("userId",id));
+            Map<String,Object> result=jdbc.queryForMap(SELECT_USER_BY_USERID_QUERY,Map.of("userId",theid));
             //check if the result is null or empty
             if(result!=null && !result.isEmpty()){
                 //set user details if present.
-                user.setId(BigInteger.valueOf(id));
+                Object idValue = result.get("id");
+                log.info("Retrieved ID from database: " + idValue);
+                user.setId((BigInteger) idValue);
+//                log.info(String.valueOf((BigInteger) result.get("id")));
+                log.info(result.toString());
                 user.setFirstName((String) result.get("first_name"));
                 user.setLastName((String) result.get("last_name"));
                 user.setEmail((String) result.get("email"));
                 //return the use
                 return user;
             }else{
-                log.warn("User with ID"+id+"not found");
+                log.warn("User with ID"+theid+"not found");
             }
         }catch(DataAccessException exec) {
             log.error(exec.getMessage());
@@ -130,24 +135,30 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public Collection<User> listUsers(Long limit) {
-       List<User> users=new ArrayList<>();
+    public Collection<User> listUsers() {
+       List<User> userslist=new ArrayList<>();
         try{
-            List<Map<String,Object>> ans=jdbc.queryForList(SELECT_ALL_USERS_QUERY,Map.of("Limit",limit));
-            for(Map<String,Object> row:ans){
-                User user=new User();
-                user.setId(BigInteger.valueOf(((Number) row.get("id")).longValue()));
-                user.setFirstName((String) row.get("first_name"));
-                user.setLastName((String) row.get("last_name"));
-                user.setEmail((String) row.get("email"));
-                users.add(user);
-            }
+             userslist=jdbc.query(SELECT_ALL_USERS_QUERY,resultSetExtractor);
+            return userslist;
         }catch(Exception exc){
             log.error(exc.getMessage());
             throw new ApiException("Something went wrong while returning the Users");
         }
-        return users;
+       // return userslist;
     }
+    //custom result set extractor
+    ResultSetExtractor<List<User>> resultSetExtractor=resultSet->{
+        List<User> users = new ArrayList<>();
+        while(resultSet.next()){
+            User user=new User();
+            user.setId(BigInteger.valueOf(resultSet.getLong("id")));
+            user.setFirstName( resultSet.getString("first_name"));
+            user.setLastName( resultSet.getString("last_name"));
+            user.setEmail( resultSet.getString("email"));
+            users.add(user);
+        }
+        return users;
+    };
 
 
     private Integer  getEmailCount(String email) {

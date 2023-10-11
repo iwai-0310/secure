@@ -28,9 +28,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> list(Long limit) {
+    public Collection<User> list() {
         log.info("Fetching users INFO");
-        return userRepository.listUsers(limit);
+        return userRepository.listUsers();
     }
 
 

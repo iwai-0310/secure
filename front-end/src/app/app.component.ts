@@ -57,10 +57,24 @@ export class AppComponent implements OnInit{
         this.isLoading.next(false);
         return of({dataState:DataState.ERROR_STATE,error})
       })
-    );
+    );  
+  }
 
+  //Function to delete the user
+  deleteUser(user:User): void{
+    this.appState$=this.userService.delete$(user.id)
+    .pipe(
+      map(response=>{
+        this.dataSubject.next(
+          {...response,data:{
+            users:this.dataSubject.value?.data.users?.filter(s=> s.id!==user.id)}}
+        )
+        return {dataState:DataState.LOADED_STATE,appData:this.dataSubject.value}
+      }),
+      startWith({dataState:DataState.LOADED_STATE,appData:this.dataSubject.value}),
+      catchError((error:string)=>{
+        return of({dataState:DataState.ERROR_STATE,error})
+      }))
   }
   
-
-
 }
