@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUser(Long id) {
-        return UserDTOMapper.fromUser(userRepository.get(id));
+    public User getUser(Long id) {
+        return userRepository.get(id);
     }
 
     @Override

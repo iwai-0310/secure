@@ -20,9 +20,9 @@ export class UserService{
     //     tap(console.log),
     //     catchError(this.handleError)
     // );
-        users$(limit:number): Observable<CustomResponse> {
-        const params = new HttpParams().set('limit', limit.toString());
-        return this.http.get<CustomResponse>(`${this.apiUrl}/user/list/${limit}`)
+        users$(): Observable<CustomResponse> {
+        // const params = new HttpParams().set('limit', limit.toString());
+        return this.http.get<CustomResponse>(`${this.apiUrl}/user/list`)
           .pipe(
             tap(console.log),
             catchError(this.handleError)

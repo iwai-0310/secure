@@ -43,11 +43,12 @@ public class UserResource {
 
     @GetMapping("/Find/{id}")
     public ResponseEntity<HttpResponse> getUser(@PathVariable Long id){
-        UserDTO userDTO=userService.getUser(id);
+//        UserDTO userDTO=userService.getUser(id);
+        User user=userService.getUser(id);
         return ResponseEntity.created(null).body(
         HttpResponse.builder()
                 .timeStamp(now().toString())
-                .data(Map.of("user",userDTO))
+                .data(Map.of("user",user))
                 .message("User presented")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())

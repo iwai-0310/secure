@@ -6,6 +6,7 @@ import { UserService } from 'src/service/user.service';
 import { DataState } from './enum/data-state.enum';
 import { NgForm } from '@angular/forms';
 import { User } from './interface/user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -19,11 +20,11 @@ export class AppComponent implements OnInit{
   private isLoading=new  BehaviorSubject<boolean>(false);
   readonly DataState=DataState
 
-  constructor(private userService:UserService){}
+  constructor(private userService:UserService,private router:Router){}
 
   ngOnInit(): void {
     const limit=3;
-   this.appState$=this.userService.users$(limit)
+   this.appState$=this.userService.users$()
    .pipe(
     map(response =>{
       this.dataSubject.next(response)
@@ -50,6 +51,10 @@ export class AppComponent implements OnInit{
         document.getElementById('closeModal')?.click();
         this.isLoading.next(false);
         userForm.resetForm();
+        //schedule a refresh
+        setTimeout(() => {
+          window.location.reload();         
+        }, 1000);
         return {dataState:DataState.LOADED_STATE,appData:this.dataSubject.value};
         }),
       startWith({dataState:DataState.LOADED_STATE,appData:this.dataSubject.value}),
@@ -69,6 +74,11 @@ export class AppComponent implements OnInit{
           {...response,data:{
             users:this.dataSubject.value?.data.users?.filter(s=> s.id!==user.id)}}
         )
+        //schedule a refresh
+        setTimeout(() => {
+          // Use the Angular Router to navigate to the same page
+          this.router.navigate(['']);
+        }, 2000);
         return {dataState:DataState.LOADED_STATE,appData:this.dataSubject.value}
       }),
       startWith({dataState:DataState.LOADED_STATE,appData:this.dataSubject.value}),

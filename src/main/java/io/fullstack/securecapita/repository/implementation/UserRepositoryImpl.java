@@ -72,6 +72,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public User get(Long theid) {
         //create the user
         User user=new User();
+
         try{
             //below line maps the field userID <- key and id <- value
             Map<String,Object> result=jdbc.queryForMap(SELECT_USER_BY_USERID_QUERY,Map.of("userId",theid));
